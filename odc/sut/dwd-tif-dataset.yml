@@ -1,0 +1,11 @@
+id: 764fe4b3-38f8-4c65-af73-1f8324744816
+product:
+  name: dwd_radklim_yw
+  version: '2017.002'
+  short_name: RADKLIM_YW
+measurements:
+  rainfall_amount:
+    path: YW_2017.002_20220112_1625.tif
+    layer: RR
+format:
+  name: GeoTIFF

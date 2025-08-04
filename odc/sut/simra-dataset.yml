@@ -1,0 +1,11 @@
+id: a9cfa9c2-45b4-11ee-be56-0242ac120002
+label: simra_berlin_trip_1561996339005
+product:
+  name: simra_bike_telemetry
+  version: '1.0'
+  short_name: SimRa
+format:
+  name: CSV
+measurements:
+  raw_trace:
+    path: berlin_trip_1561996339005.csv

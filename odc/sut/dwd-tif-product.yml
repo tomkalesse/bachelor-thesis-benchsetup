@@ -1,0 +1,16 @@
+name: dwd_radklim_yw
+description: DWD RADKLIM radar-based precipitation climatology
+
+metadata_type: eo3
+
+measurements:
+  - name: rainfall_amount
+    dtype: float32
+    nodata: -9
+    units: kg m-2
+
+metadata:
+  product:
+    name: dwd_radklim_yw
+    version: '2017.002'
+    short_name: RADKLIM_YW

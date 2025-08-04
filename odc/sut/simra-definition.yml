@@ -1,0 +1,11 @@
+name: simra_bike_telemetry
+description: Bike movement and acceleration data from SimRa
+metadata_type: telemetry
+
+metadata:
+  product:
+    name: simra_bike_telemetry
+    version: '1.0'
+    short_name: SimRa
+  format:
+    name: CSV

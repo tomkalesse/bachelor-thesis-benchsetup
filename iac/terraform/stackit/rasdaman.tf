@@ -72,7 +72,7 @@ resource "stackit_server" "rasdaman-sut" {
   ]
   labels = var.tags
 }
-
+/* 
 resource "stackit_network_interface" "rasdaman-client" {
   project_id         = var.project_id
   network_id         = stackit_network.main.network_id
@@ -121,3 +121,4 @@ output "rasdaman_sut_ip" {
 output "rasdaman_client_ip" {
   value = stackit_public_ip.rasdaman-client.ip
 }
+ */

@@ -1,4 +1,4 @@
-resource "stackit_security_group" "odc-sut" {
+/* resource "stackit_security_group" "odc-sut" {
   project_id = var.project_id
   name       = "odc-sut"
   stateful   = true
@@ -121,3 +121,4 @@ output "odc_sut_ip" {
 output "odc_client_ip" {
   value = stackit_public_ip.odc-client.ip
 }
+ */

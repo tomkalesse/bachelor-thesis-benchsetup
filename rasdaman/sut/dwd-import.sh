@@ -55,6 +55,15 @@ echo "Extracting all .tar files ..."
 for tar_file in "$DOWNLOAD_DIR"/*.tar; do
     echo "Extracting $tar_file ..."
     tar -xf "$tar_file" -C "$DOWNLOAD_DIR"
+    rm "$tar_file"  # Remove the tar file after extraction
+done
+
+# Extract all daily .tar.gz files inside
+echo "Extracting daily .tar.gz files ..."
+for gz_tar in "$DOWNLOAD_DIR"/*.tar.gz; do
+    echo "Extracting $gz_tar ..."
+    tar -xzf "$gz_tar" -C "$DOWNLOAD_DIR"
+    rm "$gz_tar"  # Remove the tar.gz file after extraction
 done
 
 # Convert .asc files to GeoTIFF
@@ -80,6 +89,6 @@ done
 echo "Adjusting permissions and importing into Rasdaman ..."
 sudo chown -R rasdaman:rasdaman /home/ubuntu/dwd-geotiff
 sudo chmod o+x /home/ubuntu
-sudo /opt/rasdaman/bin/wcst_import.sh config.json
+sudo /opt/rasdaman/bin/wcst_import.sh dwd-config.json
 
 echo "✅ All done."

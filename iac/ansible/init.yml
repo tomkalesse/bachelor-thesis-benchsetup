@@ -1,0 +1,104 @@
+- name: Initialize metrics collection on all hosts
+  hosts: all
+  become: true
+  tasks:
+    - name: Copy setup scripts to remote
+      copy:
+        src: ./metricscollection/
+        dest: /usr/local/bin/
+        mode: '0755'
+
+    - name: Create metrics folder for output
+        path: /metrics
+        state: directory
+
+    - name: Deploy systemd service [CPU]
+      copy:
+        dest: /etc/systemd/system/vm_metrics_collector_cpu.service
+        content: |
+          [Unit]
+          Description=VM Metrics Collector CPU
+          After=network.target
+
+          [Service]
+          Type=simple
+          ExecStart=/usr/local/bin/cpu_metrics.sh
+          Restart=on-failure
+          User=root
+
+          [Install]
+          WantedBy=multi-user.target
+        mode: '0644'
+
+    - name: Deploy systemd service [MEM]
+      copy:
+        dest: /etc/systemd/system/vm_metrics_collector_mem.service
+        content: |
+          [Unit]
+          Description=VM Metrics Collector MEM
+          After=network.target
+
+          [Service]
+          Type=simple
+          ExecStart=/usr/local/bin/mem_metrics.sh
+          Restart=on-failure
+          User=root
+
+          [Install]
+          WantedBy=multi-user.target
+        mode: '0644'
+
+    - name: Deploy systemd service [IO]
+      copy:
+        dest: /etc/systemd/system/vm_metrics_collector_io.service
+        content: |
+          [Unit]
+          Description=VM Metrics Collector IO
+          After=network.target
+
+          [Service]
+          Type=simple
+          ExecStart=/usr/local/bin/io_metrics.sh
+          Restart=on-failure
+          User=root
+
+          [Install]
+          WantedBy=multi-user.target
+        mode: '0644'
+
+    - name: Reload systemd
+      command: systemctl daemon-reload
+
+    - name: Enable and start metrics collector [CPU]
+      systemd:
+        name: vm_metrics_collector_cpu
+        enabled: yes
+        state: started
+
+    - name: Enable and start metrics collector [MEM]
+      systemd:
+        name: vm_metrics_collector_mem
+        enabled: yes
+        state: started
+
+    - name: Enable and start metrics collector [IO]
+      systemd:
+        name: vm_metrics_collector_io
+        enabled: yes
+        state: started
+
+- name: Initialize RasDaMan SUT
+  hosts: rasdaman_sut
+  become: true
+  tasks:
+    - name: Copy setup scripts to remote
+      copy:
+        src: ../../rasdaman/sut/
+        dest: /setup/
+        mode: '0755'
+
+    - name: Execute init.sh
+      shell: /setup/init.sh
+
+    - name: Execute dwd-import.sh
+      shell: /setup/dwd-import.sh

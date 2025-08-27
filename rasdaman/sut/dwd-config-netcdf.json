@@ -1,0 +1,33 @@
+{
+    "config": {
+      "service_url": "http://localhost:8080/rasdaman/ows",
+      "tmp_directory": "/tmp",
+      "default_crs": "http://localhost:8080/def/crs/custom/0/radolan",
+      "mock": false,
+      "automated": true
+    },
+    "input": {
+      "coverage_id": "DWDradolan_5min",
+      "paths": ["./dwd-netcdf/2022/*/*.nc"],
+      "variable": "RR",
+      "coverage_type": "grid",
+      "wms_import": false,
+      "pyramid": false,
+      "nodata": 999,
+      "axis_order": ["E", "N"]
+    },
+    "recipe": {
+			"name": "time_series_regular",
+			"options": {
+        "time_parameter": {
+          "netcdf": "time"
+        },
+        "time_crs": "http://localhost:8080/def/crs/OGC/0/AnsiDate",
+        "time_start": "20220101_0000",
+        "time_step": "5 minutes",
+        "time_format": "YYYYMMDD_HHmm",
+        "tiling": "ALIGNED [0:10, 0:256, 0:256]"
+			}
+    }
+  }
+  

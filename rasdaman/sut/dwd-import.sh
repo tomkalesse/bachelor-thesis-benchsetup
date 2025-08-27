@@ -1,19 +1,5 @@
 #!/bin/bash
 
-# Register RADOLAN CRS if not already present
-CUSTOM_CRS="http://localhost:8080/def/crs/custom/0/radolan"
-/opt/rasdaman/bin/crs-manager.sh --list | grep -q "$CUSTOM_CRS"
-
-if [ $? -ne 0 ]; then
-    echo "Registering custom RADOLAN CRS in Rasdaman..."
-    echo "$CUSTOM_CRS" > /tmp/radolan.crs
-    echo "+proj=stere +lat_0=90 +lat_ts=60 +lon_0=10 +a=6370040 +b=6370040 +units=m +no_defs" >> /tmp/radolan.crs
-    sudo /opt/rasdaman/bin/crs-manager.sh --add /tmp/radolan.crs
-    rm /tmp/radolan.crs
-else
-    echo "Custom RADOLAN CRS already registered."
-fi
-
 # Base URL
 BASE_URL="https://opendata.dwd.de/climate_environment/CDC/grids_germany/5_minutes/radolan/reproc/2017_002/asc/2022"
 
@@ -60,30 +46,17 @@ done
 
 # Extract all daily .tar.gz files inside
 echo "Extracting daily .tar.gz files ..."
-for gz_tar in "$DOWNLOAD_DIR"/*.tar.gz; do
-    echo "Extracting $gz_tar ..."
-    tar -xzf "$gz_tar" -C "$DOWNLOAD_DIR"
-    rm "$gz_tar"  # Remove the tar.gz file after extraction
-done
+ls "$DOWNLOAD_DIR"/*.tar.gz | parallel -j 4 'tar -xzf {} -C '"$DOWNLOAD_DIR"' && rm {}'
 
 # Convert .asc files to GeoTIFF
 echo "Converting .asc files to GeoTIFF ..."
-for asc_file in "$DOWNLOAD_DIR"/*.asc; do
-    echo "Processing $asc_file ..."
-    if [ -f "$asc_file" ]; then
-        base_name=$(basename "$asc_file" .asc)
-        out_tif="$GEOTIFF_DIR/${base_name}.tif"
-        
-        echo "Converting $asc_file -> $out_tif"
-        
-        # Set the projection info (you need to adjust if necessary)
-        gdal_translate \
-        -of GTiff \
-         -a_srs "+proj=stere +lat_0=90 +lat_ts=60 +lon_0=10 +a=6370040 +b=6370040 +units=m +no_defs" \
-        "$asc_file" \
-        "$out_tif"
-    fi
-done
+ls "$DOWNLOAD_DIR"/*.asc | parallel -j 4 '
+    asc_file="{}"
+    base_name=$(basename "$asc_file" .asc)
+    out_tif="'"$GEOTIFF_DIR"'/${base_name}.tif"
+    echo "Converting $asc_file -> $out_tif"
+    gdal_translate -of GTiff -a_srs "+proj=stere +lat_0=90 +lat_ts=60 +lon_0=10 +a=6370040 +b=6370040 +units=m +no_defs" "$asc_file" "$out_tif"
+'
 
 # Permissions and import
 echo "Adjusting permissions and importing into Rasdaman ..."

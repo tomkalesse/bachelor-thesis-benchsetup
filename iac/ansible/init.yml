@@ -1,16 +1,20 @@
 - name: Initialize metrics collection on all hosts
-  hosts: all
+  hosts: rasdaman_sut
   become: true
   tasks:
-    - name: Copy setup scripts to remote
+    - name: Create metrics directory
+      file:
+        path: /home/ubuntu/metrics
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Copy metricscollection scripts to remote
       copy:
         src: ./metricscollection/
         dest: /usr/local/bin/
         mode: '0755'
-
-    - name: Create metrics folder for output
-        path: /metrics
-        state: directory
 
     - name: Deploy systemd service [CPU]
       copy:
@@ -65,6 +69,42 @@
           [Install]
           WantedBy=multi-user.target
         mode: '0644'
+  
+    - name: Deploy systemd service [DISK]
+      copy:
+        dest: /etc/systemd/system/vm_metrics_collector_disk.service
+        content: |
+          [Unit]
+          Description=VM Metrics Collector DISK
+          After=network.target
+
+          [Service]
+          Type=simple
+          ExecStart=/usr/local/bin/disk_metrics.sh
+          Restart=on-failure
+          User=root
+
+          [Install]
+          WantedBy=multi-user.target
+        mode: '0644'
+
+    - name: Deploy systemd service [TCP]
+      copy:
+        dest: /etc/systemd/system/vm_metrics_collector_tcp.service
+        content: |
+          [Unit]
+          Description=VM Metrics Collector TCP
+          After=network.target
+
+          [Service]
+          Type=simple
+          ExecStart=/usr/local/bin/tcp_metrics.sh
+          Restart=on-failure
+          User=root
+
+          [Install]
+          WantedBy=multi-user.target
+        mode: '0644'
 
     - name: Reload systemd
       command: systemctl daemon-reload
@@ -86,6 +126,18 @@
         name: vm_metrics_collector_io
         enabled: yes
         state: started
+    
+    - name: Enable and start metrics collector [DISK]
+      systemd:
+        name: vm_metrics_collector_disk
+        enabled: yes
+        state: started
+
+    - name: Enable and start metrics collector [TCP]
+      systemd:
+        name: vm_metrics_collector_tcp
+        enabled: yes
+        state: started
 
 - name: Initialize RasDaMan SUT
   hosts: rasdaman_sut
@@ -94,11 +146,11 @@
     - name: Copy setup scripts to remote
       copy:
         src: ../../rasdaman/sut/
-        dest: /setup/
+        dest: /home/ubuntu/setup/
         mode: '0755'
 
     - name: Execute init.sh
-      shell: /setup/init.sh
+      shell: /home/ubuntu/setup/init.sh
 
-    - name: Execute dwd-import.sh
-      shell: /setup/dwd-import.sh
+    #- name: Execute dwd-import.sh
+    #  shell: /setup/dwd-import.sh

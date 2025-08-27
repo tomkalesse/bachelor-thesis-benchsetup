@@ -1,0 +1,1 @@
+scp -i .ssh/id_rsa ubuntu@188.34.64.59:/home/ubuntu/metrics_result.png ./Desktop/metrics_result.png

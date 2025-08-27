@@ -53,7 +53,7 @@ resource "stackit_volume" "rasdaman-sut" {
     id                    = "5f204808-32b0-406c-9dbd-064a210b1495"
     delete_on_termination = true
   }
-  size   = 256
+  size   = 512
   labels = var.tags
 }
 

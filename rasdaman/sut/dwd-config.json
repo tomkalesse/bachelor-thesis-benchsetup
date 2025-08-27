@@ -7,7 +7,7 @@
     "automated": true
   },
   "input": {
-    "coverage_id": "radolan_5min",
+    "coverage_id": "DWDradolan_5min",
     "paths": ["./dwd-geotiff/YW_2017.002_*.tif"],
     "wms_import": false,
     "pyramid": false,
@@ -15,7 +15,7 @@
     "nodata": -9,
     "pixel_size": [1000.0, 1000.0],
     "origin": [-443462.0, -3658645.0],
-    "axis_order": ["Lat", "Lon"]
+    "axis_order": ["E", "N"] 
   },
  "recipe": {
   "name": "time_series_irregular",

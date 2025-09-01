@@ -53,7 +53,7 @@ resource "stackit_volume" "rasdaman-sut" {
     id                    = "5f204808-32b0-406c-9dbd-064a210b1495"
     delete_on_termination = true
   }
-  size   = 512
+  size   = 1024
   labels = var.tags
 }
 
@@ -61,7 +61,7 @@ resource "stackit_server" "rasdaman-sut" {
   project_id        = var.project_id
   name              = "rasdaman-sut"
   availability_zone = "eu01-2"
-  machine_type      = "g1.3"
+  machine_type      = "g1.4"
   boot_volume = {
     source_type = "volume"
     source_id   = stackit_volume.rasdaman-sut.volume_id
@@ -72,7 +72,7 @@ resource "stackit_server" "rasdaman-sut" {
   ]
   labels = var.tags
 }
-/* 
+/*
 resource "stackit_network_interface" "rasdaman-client" {
   project_id         = var.project_id
   network_id         = stackit_network.main.network_id
@@ -94,7 +94,7 @@ resource "stackit_volume" "rasdaman-client" {
     id                    = "5f204808-32b0-406c-9dbd-064a210b1495"
     delete_on_termination = true
   }
-  size   = 32
+  size   = 1024
   labels = var.tags
 }
 
@@ -102,7 +102,7 @@ resource "stackit_server" "rasdaman-client" {
   project_id        = var.project_id
   name              = "rasdaman-client"
   availability_zone = "eu01-2"
-  machine_type      = "g1.1"
+  machine_type      = "g1.3"
   boot_volume = {
     source_type = "volume"
     source_id   = stackit_volume.rasdaman-client.volume_id
@@ -121,4 +121,4 @@ output "rasdaman_sut_ip" {
 output "rasdaman_client_ip" {
   value = stackit_public_ip.rasdaman-client.ip
 }
- */
+*/

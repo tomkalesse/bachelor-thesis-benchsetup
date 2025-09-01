@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+# -- Misc Dependencies --
+sudo apt-get update
+sudo apt-get install -y pigz
+
+# -- Rasdaman Setup --
+wget -O - https://download.rasdaman.org/packages/rasdaman.gpg | sudo apt-key add -
+. /etc/os-release
+echo "deb [arch=amd64] https://download.rasdaman.org/packages/deb $VERSION_CODENAME stable" \
+| sudo tee /etc/apt/sources.list.d/rasdaman.list
+sudo apt-get update
+sudo apt-get -o Dpkg::Options::="--force-confdef" install -y rasdaman
+source /etc/profile.d/rasdaman.sh
+rasql -q 'select c from RAS_COLLECTIONNAMES as c' --out string
+
+# change properties in /opt/rasdaman/etc/petascope.properties for authentication  
+FILE="/opt/rasdaman/etc/petascope.properties"
+BACKUP="${FILE}.bak.$(date +%F_%T)"
+sudo cp "$FILE" "$BACKUP"
+echo "Backup created at $BACKUP"
+sudo sed -i \
+    -e 's/^authentication_type=.*/authentication_type=/' \
+    -e 's/^rasdaman_user=.*/rasdaman_user=rasguest/' \
+    -e 's/^rasdaman_pass=.*/rasdaman_pass=rasguest/' \
+    "$FILE"
+
+sudo systemctl stop rasdaman
+sudo systemctl start rasdaman
+
+# real	6m40.657s

@@ -1,5 +1,3 @@
 # Metricscollection
 
-Running systemd processes on each VM which collect certain metrics every second and store them in .csv files. After benchmark execution collecting them and run analytics on it.
-
-scp user@vm:/tmp/vm_metrics.csv ./metrics/
+Running systemd processes on each VM which collect certain system metrics every second and store them in .csv files. After benchmark execution collecting them and run analytics on it.

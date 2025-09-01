@@ -32,7 +32,7 @@ datacube product add dwd-defintion.yaml
 datacube dataset add --auto /path/to/dwd/*.nc
 
 
- python3 dwd_dataset.py ./radklim_yw_2022/2022/11 -o ./radklim_yw_2022/docs/
+python3 dwd_dataset.py ./radklim_yw_2022/2022/11 -o ./radklim_yw_2022/docs/
 
 
 # Simra

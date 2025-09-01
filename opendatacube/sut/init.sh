@@ -33,6 +33,7 @@ fi
 git clone https://github.com/opendatacube/datacube-core
 cd datacube-core
 mamba env create -f conda-environment.yml -y
+source "$CONDA_DIR/etc/profile.d/conda.sh"
 conda activate cubeenv
 
 # Set up PostgreSQL
@@ -88,3 +89,6 @@ echo "datacube.conf created at $DC_CONF_FILE"
 
 # Initialize the datacube
 datacube -v system init
+
+
+#real	35m31.546s

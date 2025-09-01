@@ -5,11 +5,15 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"rasdaman/client/internal"
 )
 
 func main() {
 	// Rasdaman OWS endpoint
+	internal.ParseTest()
+}
 
+func test() {
 	// host := os.Getenv("HOST")
 	// endpoint := "http://" + host + ":8080/rasdaman/ows"
 	endpoint := "http://188.34.64.59:8080/rasdaman/ows"

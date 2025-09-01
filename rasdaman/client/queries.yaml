@@ -1,93 +1,95 @@
+id: 1
 title: Point-in-raster lookup
 description: Get rainfall at specific trajectory points.
-query: for $c in (dwd_5min_rr)
-return encode(
-  clip(
-    $c,
-    POINT(
-      "2022-11-16T12:02" 52.531019 13.339950
+placeholders:
+  - type: "POINT"
+    keyword: "{{POINT_PLACEHOLDER}}"
+query: |
+  for $c in (dwd_5min_rr)
+  return encode(
+    clip(
+      $c,
+      {{POINT_PLACEHOLDER}},
+      "http://localhost:8080/def/crs/EPSG/0/4326"
     ),
-    "http://localhost:8080/def/crs/EPSG/0/4326"
-  ),
-  "json"
-)
+    "json"
+  )
 
+---
 
+id: 2
 title: Trajectory exposure (average rainfall along a trip)
 description: Average rainfall along a trajectory line.
-query: for $c in (dwd_5min_rr)
-return avg(
-  clip(
-    $c,
-    LINESTRING(
-      "2022-11-16T12:02" 52.531019 13.339950,
-      "2022-11-16T12:08" 52.531204 13.339946,
-      "2022-11-16T12:16" 52.540991 13.385492
-    ),
-    "http://localhost:8080/def/crs/EPSG/0/4326"
+placeholders:
+  - type: "TRAJECTORY"
+    keyword: "{{TRAJECTORY_PLACEHOLDER}}"
+query: |
+  for $c in (dwd_5min_rr)
+  return avg(
+    clip(
+      $c,
+      {{TRAJECTORY_PLACEHOLDER}},
+      "http://localhost:8080/def/crs/EPSG/0/4326"
+    )
   )
-)
 
+---
 
+id: 3
 title: Duration above threshold
 description: How long did the trajectory experience > 1 mm/h rainfall?
-query: for $c in (dwd_5min_rr)
-return count(
-  clip(
-    $c,
-    LINESTRING(
-      "2022-11-16T12:02" 52.531019 13.339950,
-      "2022-11-16T12:08" 52.531204 13.339946,
-      "2022-11-16T12:16" 52.540991 13.385492
-    ),
-    "http://localhost:8080/def/crs/EPSG/0/4326"
-  )[ $c > 1 ]
-)
+placeholders:
+  - type: "TRAJECTORY"
+    keyword: "{{TRAJECTORY_PLACEHOLDER}}"
+query: |
+  for $c in (dwd_5min_rr)
+  return count(
+    clip(
+      $c,
+      {{TRAJECTORY_PLACEHOLDER}},
+      "http://localhost:8080/def/crs/EPSG/0/4326"
+    )[ $c > 1 ]
+  )
 
+---
 
+id: 4
 title: Trip-level join (many trajectories)
 description: Rainfall per trip (multiple trips at once).
-query: for $c in (dwd_5min_rr)
-return encode(
-  {
-    "trip1": avg(
-      clip($c,
-        LINESTRING(
-          "2022-11-16T12:02" 52.531019 13.339950,
-          "2022-11-16T12:08" 52.531204 13.339946,
-          "2022-11-16T12:16" 52.540991 13.385492
-        ),
-        "http://localhost:8080/def/crs/EPSG/0/4326"
+placeholders:
+  - type: "TRAJECTORY_LIST"
+    keyword: "{{TRAJECTORY_LIST_ELEM}}"
+    template: |
+      "trip_{index}": avg(
+        clip($c,
+          {trajectory},
+          "http://localhost:8080/def/crs/EPSG/0/4326"
+        )
       )
-    ),
-    "trip2": avg(
-      clip($c,
-        LINESTRING(
-          "2022-11-16T09:00" 52.490000 13.400000,
-          "2022-11-16T09:20" 52.495000 13.410000,
-          "2022-11-16T09:45" 52.500000 13.420000
-        ),
-        "http://localhost:8080/def/crs/EPSG/0/4326"
-      )
-    )
-  },
-  "json"
-)
+query: |
+  for $c in (dwd_5min_rr)
+  return encode(
+    {
+      {{TRAJECTORY_LIST_ITEMS}}
+    },
+    "json"
+  )
 
+---
 
+id: 5
 title: Raster-mask intersection
 description: Which parts of the trip are inside rain > 0.5 mm/h?
-query: for $c in (dwd_5min_rr)
-return encode(
-  clip(
-    ($c > 0.5),
-    LINESTRING(
-      "2022-11-16T12:02" 52.531019 13.339950,
-      "2022-11-16T12:08" 52.531204 13.339946,
-      "2022-11-16T12:16" 52.540991 13.385492
+placeholders:
+  - type: "TRAJECTORY"
+    keyword: "{{TRAJECTORY_PLACEHOLDER}}"
+query: |
+  for $c in (dwd_5min_rr)
+  return encode(
+    clip(
+      ($c > 0.5),
+      {{TRAJECTORY_PLACEHOLDER}},
+      "http://localhost:8080/def/crs/EPSG/0/4326"
     ),
-    "http://localhost:8080/def/crs/EPSG/0/4326"
-  ),
-  "json"
-)
-
+    "json"
+  )

@@ -5,7 +5,7 @@ placeholders:
   - type: "POINT"
     keyword: "{{POINT_PLACEHOLDER}}"
 query: |
-  for $c in (dwd_5min_rr)
+  for $c in (DWD_5min_4326)
   return encode(
     clip(
       $c,
@@ -24,7 +24,7 @@ placeholders:
   - type: "TRAJECTORY"
     keyword: "{{TRAJECTORY_PLACEHOLDER}}"
 query: |
-  for $c in (dwd_5min_rr)
+  for $c in (DWD_5min_4326)
   return avg(
     clip(
       $c,
@@ -42,7 +42,7 @@ placeholders:
   - type: "TRAJECTORY"
     keyword: "{{TRAJECTORY_PLACEHOLDER}}"
 query: |
-  for $c in (dwd_5min_rr)
+  for $c in (DWD_5min_4326)
   return count(
     clip(
       $c,
@@ -67,7 +67,7 @@ placeholders:
         )
       )
 query: |
-  for $c in (dwd_5min_rr)
+  for $c in (DWD_5min_4326)
   return encode(
     {
       {{TRAJECTORY_LIST_ITEMS}}
@@ -84,7 +84,7 @@ placeholders:
   - type: "TRAJECTORY"
     keyword: "{{TRAJECTORY_PLACEHOLDER}}"
 query: |
-  for $c in (dwd_5min_rr)
+  for $c in (DWD_5min_4326)
   return encode(
     clip(
       ($c > 0.5),

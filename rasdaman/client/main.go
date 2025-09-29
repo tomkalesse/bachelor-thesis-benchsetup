@@ -3,14 +3,53 @@ package main
 import (
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"rasdaman/client/internal"
 )
 
 func main() {
-	// Rasdaman OWS endpoint
-	internal.ParseTest()
+
+	qm := internal.NewQueryManager("./simra")
+	err := qm.LoadQueries("queries.yaml")
+	if err != nil {
+		fmt.Printf("Error loading queries: %v\n", err)
+		return
+	}
+	var list []string
+
+	endpoint := "http://188.34.96.4:8080/rasdaman/ows"
+
+	query, _ := qm.ConstructQuery(2, nil, "trip001", list)
+	log.Println(query)
+
+	form := url.Values{}
+	form.Set("service", "WCS")
+	form.Set("version", "2.0.1")
+	form.Set("request", "ProcessCoverages")
+	form.Set("query", query)
+
+	// POST form
+	resp, err := http.PostForm(endpoint, form)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	// Read response
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		fmt.Printf("RasQL query failed: %d\nResponse: %s\n", resp.StatusCode, string(body))
+		return
+	}
+
+	fmt.Println("Query successful, result:")
+	fmt.Println(string(body))
 }
 
 func test() {

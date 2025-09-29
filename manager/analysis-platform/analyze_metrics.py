@@ -1,13 +1,14 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+import sys
 
 # Load CSV files
-cpu_df = pd.read_csv("./metrics/cpu_metrics.csv", on_bad_lines="skip")
-io_df  = pd.read_csv("./metrics/io_metrics.csv",  on_bad_lines="skip")
-mem_df = pd.read_csv("./metrics/mem_metrics.csv", on_bad_lines="skip")
-disk_df = pd.read_csv("./metrics/disk_metrics.csv", on_bad_lines="skip")
-tcp_df = pd.read_csv("./metrics/tcp_metrics.csv", on_bad_lines="skip")
+cpu_df = pd.read_csv("./cpu_metrics.csv", on_bad_lines="skip")
+io_df  = pd.read_csv("./io_metrics.csv",  on_bad_lines="skip")
+mem_df = pd.read_csv("./mem_metrics.csv", on_bad_lines="skip")
+disk_df = pd.read_csv("./disk_metrics.csv", on_bad_lines="skip")
+tcp_df = pd.read_csv("./tcp_metrics.csv", on_bad_lines="skip")
 
 # Convert timestamps (assuming UNIX epoch in seconds; adjust if needed)
 cpu_df["timestamp"] = pd.to_datetime(cpu_df["timestamp"], unit="s", errors="coerce", utc=True)
@@ -85,5 +86,11 @@ fig.text(
     ha="center", fontsize=9
 )
 
-plt.savefig("metrics_result.png", dpi=300)
-print("✅ Plot saved as metrics_result.png")
+if len(sys.argv) < 2:
+    print("Usage: python3 script.py <argument>")
+    argument = "default"
+else:
+    argument = sys.argv[1]
+
+plt.savefig(f"metrics_result_{argument}.png", dpi=300)
+print(f"✅ Plot saved as metrics_result_{argument}.png")

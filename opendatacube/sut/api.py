@@ -10,7 +10,8 @@ import time
 # Server setup
 # --------------------
 app = FastAPI()
-dc = Datacube(app="odc_server_benchmark")
+dc = Datacube()
+#dc = Datacube(app="odc_server_benchmark")
 
 # --------------------
 # Request schema
@@ -31,8 +32,10 @@ class TrajectoryRequest(BaseModel):
 def execute_query(traj_df: pd.DataFrame, query_type: str, threshold: float = 1.0):
     # load cube for the time range of this trajectory
     ds = dc.load(
-        product="dwd_5min_rr",
-        time=(traj_df["time"].min(), traj_df["time"].max())
+        product="dwd_weather",
+        time=(traj_df["time"].min(), traj_df["time"].max()),
+        output_crs="EPSG:4326",
+        resolution=(-0.01, 0.01)
     )
     values = []
     for _, row in traj_df.iterrows():
@@ -80,12 +83,5 @@ async def query_odc(req: TrajectoryRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# pip install fastapi uvicorn datacube xarray pandas numpy
-# uvicorn odc_server:app --host 0.0.0.0 --port 8000 --workers 4
-#{
-#  "trajectory": [
-#    {"time": "2022-11-16T12:02", "lat": 52.531019, "lon": 13.339950},
-#    {"time": "2022-11-16T12:08", "lat": 52.531204, "lon": 13.339946}
-#  ],
-#  "query_type": "avg"
-#}
+
+# uvicorn api:app --host 0.0.0.0 --port 8000 --workers 4

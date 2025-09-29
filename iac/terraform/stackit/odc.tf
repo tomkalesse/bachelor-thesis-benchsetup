@@ -1,4 +1,4 @@
-/* resource "stackit_security_group" "odc-sut" {
+resource "stackit_security_group" "odc-sut" {
   project_id = var.project_id
   name       = "odc-sut"
   stateful   = true
@@ -72,7 +72,7 @@ resource "stackit_server" "odc-sut" {
   ]
   labels = var.tags
 }
-
+/*
 resource "stackit_network_interface" "odc-client" {
   project_id         = var.project_id
   network_id         = stackit_network.main.network_id

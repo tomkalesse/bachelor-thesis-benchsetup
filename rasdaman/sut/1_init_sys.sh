@@ -17,15 +17,15 @@ rasql -q 'select c from RAS_COLLECTIONNAMES as c' --out string
 # change properties in /opt/rasdaman/etc/petascope.properties for authentication  
 FILE="/opt/rasdaman/etc/petascope.properties"
 BACKUP="${FILE}.bak.$(date +%F_%T)"
-sudo cp "$FILE" "$BACKUP"
+cp "$FILE" "$BACKUP"
 echo "Backup created at $BACKUP"
-sudo sed -i \
+sed -i \
     -e 's/^authentication_type=.*/authentication_type=/' \
     -e 's/^rasdaman_user=.*/rasdaman_user=rasguest/' \
     -e 's/^rasdaman_pass=.*/rasdaman_pass=rasguest/' \
     "$FILE"
 
-sudo systemctl stop rasdaman
-sudo systemctl start rasdaman
-
-# real	6m40.657s
+echo "Restarting rasdaman..."
+sudo systemctl restart rasdaman
+echo "Rasdaman restarted successfully"
+exit 0

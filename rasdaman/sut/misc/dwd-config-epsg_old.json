@@ -18,11 +18,8 @@
         "axis_order": ["lon", "lat"] 
     },
     "recipe": {
-        "name": "time_series_regular",
+        "name": "time_series_irregular",
         "options": {
-            "time_start": "2022-01-01T00:00:00Z",
-            "time_step": "5 minutes",
-            "time_format": "auto",
             "time_parameter": {
                 "filename": {
                     "regex": "YW_2017\\.002_(\\d{8}_\\d{4})\\.tif",

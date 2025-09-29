@@ -1,0 +1,25 @@
+name: dwd_weather
+description: "DWD Weather Raster Data (EPSG:4326, 0.01° resolution)"
+metadata_type: eo3
+
+metadata:
+  product_type: weather_raster
+  format: GeoTIFF
+  crs: "EPSG:4326"
+
+measurements:
+  - name: rainfall_amount
+    dtype: float32
+    nodata: -9
+    units: kg m-2
+
+storage:
+  crs: "EPSG:4326"
+  resolution:
+    latitude: -0.01
+    longitude: 0.01
+  tile_size:
+    x: 34
+    y: 67
+
+# datacube product add dwd-product.yml

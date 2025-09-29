@@ -1,6 +1,13 @@
 - name: Initialize metrics collection on all hosts
-  hosts: rasdaman_sut
+  hosts: all
   become: true
+  vars:
+    metrics_services:
+      - { name: cpu, script: cpu_metrics.sh }
+      - { name: mem, script: mem_metrics.sh }
+      - { name: io, script: io_metrics.sh }
+      - { name: disk, script: disk_metrics.sh }
+      - { name: tcp, script: tcp_metrics.sh }
   tasks:
     - name: Create metrics directory
       file:
@@ -12,145 +19,88 @@
 
     - name: Copy metricscollection scripts to remote
       copy:
-        src: ./metricscollection/
+        src: ../../utils/metricscollection/
         dest: /usr/local/bin/
         mode: '0755'
 
-    - name: Deploy systemd service [CPU]
+    - name: Deploy systemd services for metrics
       copy:
-        dest: /etc/systemd/system/vm_metrics_collector_cpu.service
+        dest: "/etc/systemd/system/vm_metrics_collector_{{ item.name }}.service"
         content: |
           [Unit]
-          Description=VM Metrics Collector CPU
+          Description=VM Metrics Collector {{ item.name | upper }}
           After=network.target
 
           [Service]
           Type=simple
-          ExecStart=/usr/local/bin/cpu_metrics.sh
+          ExecStart=/usr/local/bin/{{ item.script }}
           Restart=on-failure
           User=root
 
           [Install]
           WantedBy=multi-user.target
         mode: '0644'
-
-    - name: Deploy systemd service [MEM]
-      copy:
-        dest: /etc/systemd/system/vm_metrics_collector_mem.service
-        content: |
-          [Unit]
-          Description=VM Metrics Collector MEM
-          After=network.target
-
-          [Service]
-          Type=simple
-          ExecStart=/usr/local/bin/mem_metrics.sh
-          Restart=on-failure
-          User=root
-
-          [Install]
-          WantedBy=multi-user.target
-        mode: '0644'
-
-    - name: Deploy systemd service [IO]
-      copy:
-        dest: /etc/systemd/system/vm_metrics_collector_io.service
-        content: |
-          [Unit]
-          Description=VM Metrics Collector IO
-          After=network.target
-
-          [Service]
-          Type=simple
-          ExecStart=/usr/local/bin/io_metrics.sh
-          Restart=on-failure
-          User=root
-
-          [Install]
-          WantedBy=multi-user.target
-        mode: '0644'
-  
-    - name: Deploy systemd service [DISK]
-      copy:
-        dest: /etc/systemd/system/vm_metrics_collector_disk.service
-        content: |
-          [Unit]
-          Description=VM Metrics Collector DISK
-          After=network.target
-
-          [Service]
-          Type=simple
-          ExecStart=/usr/local/bin/disk_metrics.sh
-          Restart=on-failure
-          User=root
-
-          [Install]
-          WantedBy=multi-user.target
-        mode: '0644'
-
-    - name: Deploy systemd service [TCP]
-      copy:
-        dest: /etc/systemd/system/vm_metrics_collector_tcp.service
-        content: |
-          [Unit]
-          Description=VM Metrics Collector TCP
-          After=network.target
-
-          [Service]
-          Type=simple
-          ExecStart=/usr/local/bin/tcp_metrics.sh
-          Restart=on-failure
-          User=root
-
-          [Install]
-          WantedBy=multi-user.target
-        mode: '0644'
+      loop: "{{ metrics_services }}"
 
     - name: Reload systemd
       command: systemctl daemon-reload
 
-    - name: Enable and start metrics collector [CPU]
+    - name: Enable and start metrics collectors
       systemd:
-        name: vm_metrics_collector_cpu
+        name: "vm_metrics_collector_{{ item.name }}"
         enabled: yes
         state: started
+      loop: "{{ metrics_services }}"
 
-    - name: Enable and start metrics collector [MEM]
-      systemd:
-        name: vm_metrics_collector_mem
-        enabled: yes
-        state: started
+- name: Load DWD data on SUTs
+  hosts: rasdaman_sut, odc_sut
+  become: true
+  tasks:
+    - name: Copy DWD import script
+      copy:
+        src: ../../data/dwd/import-data-berlin.sh
+        dest: /home/ubuntu/dwd-import.sh
+        mode: '0755'
 
-    - name: Enable and start metrics collector [IO]
-      systemd:
-        name: vm_metrics_collector_io
-        enabled: yes
-        state: started
-    
-    - name: Enable and start metrics collector [DISK]
-      systemd:
-        name: vm_metrics_collector_disk
-        enabled: yes
-        state: started
+    - name: Install pigz
+      apt:
+        name: pigz
+        state: present
+        update_cache: yes
 
-    - name: Enable and start metrics collector [TCP]
-      systemd:
-        name: vm_metrics_collector_tcp
-        enabled: yes
-        state: started
+    - name: Execute DWD import
+      shell: /home/ubuntu/dwd-import.sh
+      args:
+        executable: /bin/bash
 
 - name: Initialize RasDaMan SUT
   hosts: rasdaman_sut
   become: true
   tasks:
-    - name: Copy setup scripts to remote
+    - name: Copy RasDaMan setup scripts
       copy:
         src: ../../rasdaman/sut/
-        dest: /home/ubuntu/setup/
+        dest: /home/ubuntu/
         mode: '0755'
 
-    - name: Execute init.sh
-      shell: /home/ubuntu/setup/init.sh
+    - name: Run initialization script
+      shell: /home/ubuntu/1_init_sys.sh
+    
+    - name: Run import script
+      shell: /home/ubuntu/2_import_data.sh
 
-    #- name: Execute dwd-import.sh
-    #  shell: /setup/dwd-import.sh
+- name: Initialize ODC SUT
+  hosts: odc_sut
+  become: true
+  tasks:
+    - name: Copy ODC setup scripts
+      copy:
+        src: ../../opendatacube/sut/
+        dest: /home/ubuntu/
+        mode: '0755'
+
+    - name: Run initialization script
+      shell: /home/ubuntu/1_init_sys.sh
+    
+    - name: Run import script
+      shell: /home/ubuntu/2_import_data.sh

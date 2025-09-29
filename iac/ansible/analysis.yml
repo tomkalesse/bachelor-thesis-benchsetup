@@ -1,0 +1,98 @@
+- name: "Fetch Data [RasDaMan SUT]"
+  hosts: rasdaman_sut
+  become: true
+  tasks:
+    - name: Fetch Metrics
+      fetch:
+        src: /home/ubuntu/metrics/
+        dest: /tmp/metrics/rasdaman_sut/
+        flat: no
+
+- name: "Fetch Data [RasDaMan Client]"
+  hosts: rasdaman_client
+  become: true
+  tasks:
+    - name: Fetch Metrics
+      fetch:
+        src: /home/ubuntu/metrics/
+        dest: /tmp/metrics/rasdaman_client/
+        flat: no
+        
+    - name: Fetch Results
+      fetch:
+        src: /home/ubuntu/results/
+        dest: /tmp/results/rasdaman_client/
+        flat: no
+
+- name: "Fetch Data [ODC SUT]"
+  hosts: odc_sut
+  become: true
+  tasks:
+    - name: Fetch Metrics
+      fetch:
+        src: /home/ubuntu/metrics/
+        dest: /tmp/metrics/odc_sut/
+        flat: no
+
+- name: "Fetch Data [ODC Client]"
+  hosts: odc_client
+  become: true
+  tasks:
+    - name: Fetch Metrics
+      fetch:
+        src: /home/ubuntu/metrics/
+        dest: /tmp/metrics/odc_client/
+        flat: no
+
+    - name: Fetch Results
+      fetch:
+        src: /home/ubuntu/results/
+        dest: /tmp/results/odc_client/
+        flat: no
+
+- name: "Upload Data [Manager]"
+  hosts: manager
+  become: true
+  tasks:
+    - name: Upload Metrics
+      copy:
+        src: /tmp/metrics/
+        dest: /home/ubuntu/data/metrics/
+        mode: '0755'
+
+    - name: Move Metrics
+      copy:
+        src: /home/ubuntu/metrics/
+        dest: /home/ubuntu/data/metrics/manager/
+        mode: '0755'
+        remote_src: yes
+
+    - name: Upload Results
+      copy:
+        src: /tmp/results/
+        dest: /home/ubuntu/data/results/
+        mode: '0755'
+    
+- name: "Analyze"
+  hosts: manager
+  become: true
+  tasks:
+    - name: "Analyze Metrics [RasDaMan SUT]"
+      shell:
+        python3 /home/ubuntu/analysis-platform/analyze_metrics.py rasdaman_sut
+
+    - name: "Analyze Metrics [RasDaMan Client]"
+      shell:
+        python3 /home/ubuntu/analysis-platform/analyze_metrics.py rasdaman_client
+
+    - name: "Analyze Metrics [ODC SUT]"
+      shell:
+        python3 /home/ubuntu/analysis-platform/analyze_metrics.py odc_sut
+
+    - name: "Analyze Metrics [ODC Client]"
+      shell:
+        python3 /home/ubuntu/analysis-platform/analyze_metrics.py odc_client
+
+    - name: "Analyze Metrics [Manager]"
+      shell:
+        python3 /home/ubuntu/analysis-platform/analyze_metrics.py manager

@@ -1,1 +1,1 @@
-ansible-playbook -i inventory.ini init.yml
+ansible-playbook -i inventory.ini init.yml -v

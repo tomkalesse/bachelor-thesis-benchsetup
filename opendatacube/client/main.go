@@ -72,8 +72,10 @@ func main() {
 		Handler: mux,
 	}
 
-	log.Println("Starting server on :8080")
-	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		log.Fatalf("Could not listen on :8080: %v\n", err)
-	}
+	go func() {
+		log.Println("Starting server on :8080")
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("Could not listen on :8080: %v\n", err)
+		}
+	}()
 }

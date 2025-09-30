@@ -1,0 +1,27 @@
+id: 1
+title: Point-in-raster lookup
+description: Get rainfall at specific trajectory points.
+
+---
+
+id: 2
+title: Trajectory exposure (average rainfall along a trip)
+description: Average rainfall along a trajectory line.
+
+---
+
+id: 3
+title: Duration above threshold
+description: How long did the trajectory experience > 1 mm/h rainfall?
+
+---
+
+id: 4
+title: Trip-level join (many trajectories)
+description: Rainfall per trip (multiple trips at once).
+
+---
+
+id: 5
+title: Raster-mask intersection
+description: Which parts of the trip are inside rain > 0.5 mm/h?

@@ -61,7 +61,7 @@ resource "stackit_server" "rasdaman-sut" {
   project_id        = var.project_id
   name              = "rasdaman-sut"
   availability_zone = "eu01-2"
-  machine_type      = "g1.4"
+  machine_type      = "g1.3"
   boot_volume = {
     source_type = "volume"
     source_id   = stackit_volume.rasdaman-sut.volume_id
@@ -72,7 +72,7 @@ resource "stackit_server" "rasdaman-sut" {
   ]
   labels = var.tags
 }
-/*
+
 resource "stackit_network_interface" "rasdaman-client" {
   project_id         = var.project_id
   network_id         = stackit_network.main.network_id
@@ -121,4 +121,3 @@ output "rasdaman_sut_ip" {
 output "rasdaman_client_ip" {
   value = stackit_public_ip.rasdaman-client.ip
 }
-*/

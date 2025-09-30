@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 echo "Adjusting permissions and importing into Rasdaman ..."
 sudo chown -R rasdaman:rasdaman /home/ubuntu/dwd-geotiff
 sudo chmod o+x /home/ubuntu

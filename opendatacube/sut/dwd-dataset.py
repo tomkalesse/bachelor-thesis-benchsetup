@@ -72,4 +72,4 @@ for fname in os.listdir(input_dir):
     with open(yaml_path, "w") as f:
         yaml.dump(dataset, f, sort_keys=False)
 
-print("✅ Dataset YAMLs generated in", output_dir)
+print("Dataset YAMLs generated in", output_dir)

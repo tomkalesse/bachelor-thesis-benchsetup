@@ -168,7 +168,7 @@ func (qm *QueryManager) ConstructQuery(queryID int, trajectoryIDs []string) (str
 				if err != nil {
 					return "", fmt.Errorf("failed to load trajectory %s: %v", trajectoryIDs[0], err)
 				}
-				trajectoryStr := qm.formatTrajectoryAsLinestring(trajectory)
+				trajectoryStr := qm.formatTrajectoryAsJSONArray(trajectory)
 				constructedQuery = strings.ReplaceAll(constructedQuery, placeholder.Keyword, trajectoryStr)
 			} else {
 				return "", fmt.Errorf("'trajectoryID' for 'TRAJECTORY' query missing")
@@ -183,17 +183,16 @@ func (qm *QueryManager) ConstructQuery(queryID int, trajectoryIDs []string) (str
 					return "", fmt.Errorf("'itemTemplate' for 'TRAJECTORY_LIST' query missing")
 				}
 
-				for i, trajectoryID := range trajectoryIDs {
+				for _, trajectoryID := range trajectoryIDs {
 					trajectory, err := qm.LoadTrajectoryFromCSV(trajectoryID)
 					if err != nil {
 						return "", fmt.Errorf("failed to load trajectory %s: %v", trajectoryID, err)
 					}
 
-					trajectoryStr := qm.formatTrajectoryAsLinestring(trajectory)
+					trajectoryStr := qm.formatTrajectoryAsJSONArray(trajectory)
 
 					// Replace template placeholders
-					tripItem := strings.ReplaceAll(itemTemplate, "{index}", fmt.Sprintf("%d", i+1))
-					tripItem = strings.ReplaceAll(tripItem, "{trajectory}", trajectoryStr)
+					tripItem := strings.ReplaceAll(itemTemplate, "{trajectory}", trajectoryStr)
 
 					tripItems = append(tripItems, tripItem)
 				}
@@ -209,17 +208,17 @@ func (qm *QueryManager) ConstructQuery(queryID int, trajectoryIDs []string) (str
 	return constructedQuery, nil
 }
 
-// formatTrajectoryAsLinestring converts a trajectory to LINESTRING format
-func (qm *QueryManager) formatTrajectoryAsLinestring(trajectory Trajectory) string {
-	if len(trajectory) == 0 {
-		return "LINESTRING()"
+// formatTrajectoryAsJSONArray converts a Trajectory into JSON array format
+func (qm *QueryManager) formatTrajectoryAsJSONArray(traj Trajectory) string {
+	if len(traj) == 0 {
+		return "[]"
 	}
 
-	var points []string
-	for _, point := range trajectory {
-		pointStr := fmt.Sprintf(`"%s" %.6f %.6f`, point.Timestamp, point.Latitude, point.Longitude)
-		points = append(points, pointStr)
+	var rows []string
+	for _, point := range traj {
+		row := fmt.Sprintf(`["%s", %.6f, %.6f]`, point.Timestamp, point.Latitude, point.Longitude)
+		rows = append(rows, row)
 	}
 
-	return fmt.Sprintf("LINESTRING(\n      %s\n    )", strings.Join(points, ",\n      "))
+	return fmt.Sprintf("[\n      %s\n    ]", strings.Join(rows, ",\n      "))
 }

@@ -53,7 +53,7 @@ resource "stackit_volume" "rasdaman-sut" {
     id                    = "5f204808-32b0-406c-9dbd-064a210b1495"
     delete_on_termination = true
   }
-  size   = 1024
+  size   = 256
   labels = var.tags
 }
 
@@ -94,7 +94,7 @@ resource "stackit_volume" "rasdaman-client" {
     id                    = "5f204808-32b0-406c-9dbd-064a210b1495"
     delete_on_termination = true
   }
-  size   = 1024
+  size   = 64
   labels = var.tags
 }
 

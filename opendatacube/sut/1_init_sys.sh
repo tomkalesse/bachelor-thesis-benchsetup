@@ -23,16 +23,17 @@ if [ ! -d "datacube-core" ]; then
   git clone https://github.com/opendatacube/datacube-core
 fi
 
-# Copy config if present
+# Copy needed files if present
 if [ -f "datacube.conf" ]; then
   mkdir -p ./datacube-core
   mv datacube.conf ./datacube-core/datacube.conf
+  mv api.py ./datacube-core/api.py
 fi
 
 cd datacube-core
 
 # Install ODC + dependencies globally (system python)
-pip3 install --break-system-packages -e .
+pip3 install --break-system-packages --ignore-installed -e .
 pip3 install --break-system-packages psycopg2-binary odc-stac odc-loader rasterio xarray pandas numpy fastapi uvicorn
 
 # Enable + start PostgreSQL

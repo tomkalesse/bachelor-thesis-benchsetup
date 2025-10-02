@@ -15,7 +15,7 @@ resource "local_file" "ansible_inventory" {
   content  = templatefile("../../ansible/inventory.tpl", {
     manager_ip = stackit_public_ip.manager.ip
     odc_sut_ip = stackit_public_ip.odc-sut.ip
-    odc_client_ip = "test" # stackit_public_ip.odc-client.ip
+    odc_client_ip = stackit_public_ip.odc-client.ip
     rasdaman_sut_ip = stackit_public_ip.rasdaman-sut.ip
     rasdaman_client_ip = stackit_public_ip.rasdaman-client.ip
   })

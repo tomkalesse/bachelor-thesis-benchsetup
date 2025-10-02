@@ -3,12 +3,18 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import sys
 
+if len(sys.argv) < 2:
+    print("Usage: python3 script.py <argument>")
+    argument = "default"
+else:
+    argument = sys.argv[1]
+
 # Load CSV files
-cpu_df = pd.read_csv("./cpu_metrics.csv", on_bad_lines="skip")
-io_df  = pd.read_csv("./io_metrics.csv",  on_bad_lines="skip")
-mem_df = pd.read_csv("./mem_metrics.csv", on_bad_lines="skip")
-disk_df = pd.read_csv("./disk_metrics.csv", on_bad_lines="skip")
-tcp_df = pd.read_csv("./tcp_metrics.csv", on_bad_lines="skip")
+cpu_df = pd.read_csv(f"/home/ubuntu/analysis-platform/metrics/{argument}/cpu_metrics.csv", on_bad_lines="skip")
+io_df  = pd.read_csv(f"/home/ubuntu/analysis-platform/metrics/{argument}/io_metrics.csv",  on_bad_lines="skip")
+mem_df = pd.read_csv(f"/home/ubuntu/analysis-platform/metrics/{argument}/mem_metrics.csv", on_bad_lines="skip")
+disk_df = pd.read_csv(f"/home/ubuntu/analysis-platform/metrics/{argument}/disk_metrics.csv", on_bad_lines="skip")
+tcp_df = pd.read_csv(f"/home/ubuntu/analysis-platform/metrics/{argument}/tcp_metrics.csv", on_bad_lines="skip")
 
 # Convert timestamps (assuming UNIX epoch in seconds; adjust if needed)
 cpu_df["timestamp"] = pd.to_datetime(cpu_df["timestamp"], unit="s", errors="coerce", utc=True)
@@ -85,12 +91,6 @@ fig.text(
     f"Time format: YYYY-MM-DD HH:MM | Timezone: {cpu_df['timestamp'].dt.tz.zone}",
     ha="center", fontsize=9
 )
-
-if len(sys.argv) < 2:
-    print("Usage: python3 script.py <argument>")
-    argument = "default"
-else:
-    argument = sys.argv[1]
 
 plt.savefig(f"metrics_result_{argument}.png", dpi=300)
 print(f"✅ Plot saved as metrics_result_{argument}.png")

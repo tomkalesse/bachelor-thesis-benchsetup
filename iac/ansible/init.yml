@@ -52,6 +52,19 @@
         state: started
       loop: "{{ metrics_services }}"
 
+- name: Initialize Manager
+  hosts: manager
+  become: true
+  tasks:
+    - name: Copy RasDaMan setup scripts
+      copy:
+        src: ../../manager/
+        dest: /home/ubuntu/
+        mode: '0755'
+
+    - name: Run initialization script
+      shell: /home/ubuntu/init.sh
+
 - name: Initialize RasDaMan Client
   hosts: rasdaman_client
   become: true
@@ -66,6 +79,14 @@
       copy:
         src: ../../rasdaman/client/
         dest: /home/ubuntu/
+        owner: ubuntu
+        group: ubuntu
+        mode: '0755'
+
+    - name: Create results directory
+      file:
+        path: /home/ubuntu/results
+        state: directory
         owner: ubuntu
         group: ubuntu
         mode: '0755'
@@ -118,6 +139,14 @@
       copy:
         src: ../../opendatacube/client/
         dest: /home/ubuntu/
+        owner: ubuntu
+        group: ubuntu
+        mode: '0755'
+
+    - name: Create results directory
+      file:
+        path: /home/ubuntu/results
+        state: directory
         owner: ubuntu
         group: ubuntu
         mode: '0755'

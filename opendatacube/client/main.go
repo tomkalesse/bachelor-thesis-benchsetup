@@ -6,7 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"rasdaman/client/internal"
+	"opendatacube/client/internal"
 )
 
 type Config struct {
@@ -72,10 +72,8 @@ func main() {
 		Handler: mux,
 	}
 
-	go func() {
-		log.Println("Starting server on :8080")
-		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("Could not listen on :8080: %v\n", err)
-		}
-	}()
+	log.Println("Starting server on :8080")
+	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		log.Fatalf("Could not listen on :8080: %v\n", err)
+	}
 }

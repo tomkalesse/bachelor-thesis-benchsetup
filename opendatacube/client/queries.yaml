@@ -1,27 +1,82 @@
 id: 1
 title: Point-in-raster lookup
 description: Get rainfall at specific trajectory points.
+placeholders:
+  - type: "POINT"
+    keyword: "{{POINT_PLACEHOLDER}}"
+query: |
+  {
+    "trajectories": [
+      {{POINT_PLACEHOLDER}}
+    ],
+    "query_type": "point"
+  }
 
 ---
 
 id: 2
 title: Trajectory exposure (average rainfall along a trip)
 description: Average rainfall along a trajectory line.
+placeholders:
+  - type: "TRAJECTORY"
+    keyword: "{{TRAJECTORY_PLACEHOLDER}}"
+query: |
+  {
+    "trajectories": [
+      {{TRAJECTORY_PLACEHOLDER}}
+    ],
+    "query_type": "avg"
+  }
 
 ---
 
 id: 3
 title: Duration above threshold
 description: How long did the trajectory experience > 1 mm/h rainfall?
+placeholders:
+  - type: "TRAJECTORY"
+    keyword: "{{TRAJECTORY_PLACEHOLDER}}"
+query: |
+  {
+    "trajectories": [
+      {{TRAJECTORY_PLACEHOLDER}}
+    ],
+    "query_type": "threshold",
+    "threshold": 1.0
+  }
 
 ---
 
 id: 4
 title: Trip-level join (many trajectories)
 description: Rainfall per trip (multiple trips at once).
+placeholders:
+  - type: "TRAJECTORY_LIST"
+    keyword: "{{TRAJECTORY_LIST_ELEM}}"
+    template: |
+      {trajectory}
+query: |
+  {
+    "trajectories": [
+      {{TRAJECTORY_LIST_ELEM}}
+    ],
+    "query_type": "avg"
+  }
+
 
 ---
 
 id: 5
 title: Raster-mask intersection
 description: Which parts of the trip are inside rain > 0.5 mm/h?
+placeholders:
+  - type: "TRAJECTORY"
+    keyword: "{{TRAJECTORY_PLACEHOLDER}}"
+query: |
+  {
+    "trajectories": [
+      {{TRAJECTORY_PLACEHOLDER}}
+    ],
+    "query_type": "mask",
+    "threshold": 0.5
+  }

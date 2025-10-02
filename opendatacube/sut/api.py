@@ -5,32 +5,17 @@ import numpy as np
 from datacube import Datacube
 import asyncio
 import time
+from typing import List
 
-# --------------------
-# Server setup
-# --------------------
 app = FastAPI()
 dc = Datacube()
-#dc = Datacube(app="odc_server_benchmark")
-
-# --------------------
-# Request schema
-# --------------------
-class TrajectoryPoint(BaseModel):
-    time: str  # ISO format
-    lat: float
-    lon: float
 
 class TrajectoryRequest(BaseModel):
-    trajectory: list[TrajectoryPoint]
-    query_type: str  # "point", "avg", "threshold"
-    threshold: float = 1.0  # only used for threshold queries
+    trajectories: List[List[List]]  # list of trajectories, each trajectory = list of [time, lat, lon]
+    query_type: str
+    threshold: float = 1.0
 
-# --------------------
-# Query execution
-# --------------------
 def execute_query(traj_df: pd.DataFrame, query_type: str, threshold: float = 1.0):
-    # load cube for the time range of this trajectory
     ds = dc.load(
         product="dwd_weather",
         time=(traj_df["time"].min(), traj_df["time"].max()),
@@ -45,7 +30,7 @@ def execute_query(traj_df: pd.DataFrame, query_type: str, threshold: float = 1.0
             lon=row["lon"],
             method="nearest"
         )
-        values.append(sel["precipitation"].item())  # adjust band name
+        values.append(sel["precipitation"].item())
 
     if query_type == "point":
         return values
@@ -53,10 +38,15 @@ def execute_query(traj_df: pd.DataFrame, query_type: str, threshold: float = 1.0
         return float(np.mean(values))
     elif query_type == "threshold":
         count_above = np.sum(np.array(values) > threshold)
-        duration_minutes = int(count_above * 5)  # assuming 5-min raster resolution
+        duration_minutes = int(count_above * 5)  # assuming 5-min resolution
         return duration_minutes
+    elif query_type == "mask":
+        # return only trajectory points above threshold
+        mask_points = traj_df[np.array(values) > threshold]
+        return mask_points.to_dict(orient="records")
     else:
         raise ValueError(f"Unknown query type: {query_type}")
+
 
 # --------------------
 # API endpoint
@@ -64,24 +54,31 @@ def execute_query(traj_df: pd.DataFrame, query_type: str, threshold: float = 1.0
 @app.post("/query")
 async def query_odc(req: TrajectoryRequest):
     try:
-        # convert to DataFrame
-        traj_df = pd.DataFrame([{
-            "time": pd.to_datetime(p.time),
-            "lat": p.lat,
-            "lon": p.lon
-        } for p in req.trajectory])
-        
-        start_time = time.time()
-        result = await asyncio.to_thread(
-            execute_query, traj_df, req.query_type, req.threshold
-        )
-        end_time = time.time()
-        return {
-            "result": result,
-            "latency_sec": end_time - start_time
-        }
+        results = []
+
+        # iterate over all trajectories
+        for traj in req.trajectories:
+            # convert trajectory to DataFrame
+            traj_df = pd.DataFrame(traj, columns=["time", "lat", "lon"])
+            traj_df["time"] = pd.to_datetime(traj_df["time"])
+            
+            start_time = time.time()
+            res = await asyncio.to_thread(
+                execute_query, traj_df, req.query_type, req.threshold
+            )
+            end_time = time.time()
+
+            results.append({
+                "trajectory_result": res,
+                "latency_sec": end_time - start_time
+            })
+
+        # if only one trajectory, unwrap
+        if len(results) == 1:
+            return results[0]
+        return results
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
 
 # uvicorn api:app --host 0.0.0.0 --port 8000 --workers 4

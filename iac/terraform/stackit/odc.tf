@@ -72,7 +72,7 @@ resource "stackit_server" "odc-sut" {
   ]
   labels = var.tags
 }
-/*
+
 resource "stackit_network_interface" "odc-client" {
   project_id         = var.project_id
   network_id         = stackit_network.main.network_id
@@ -94,7 +94,7 @@ resource "stackit_volume" "odc-client" {
     id                    = "5f204808-32b0-406c-9dbd-064a210b1495"
     delete_on_termination = true
   }
-  size   = 32
+  size   = 64
   labels = var.tags
 }
 
@@ -121,4 +121,3 @@ output "odc_sut_ip" {
 output "odc_client_ip" {
   value = stackit_public_ip.odc-client.ip
 }
- */

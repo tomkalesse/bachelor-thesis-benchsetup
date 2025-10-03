@@ -58,9 +58,9 @@ title: Trip-level join (many trajectories)
 description: Rainfall per trip (multiple trips at once).
 placeholders:
   - type: "TRAJECTORY_LIST"
-    keyword: "{{TRAJECTORY_LIST_ELEM}}"
+    keyword: "{{TRAJECTORY_LIST_ITEMS}}"
     template: |
-      "trip_{index}": avg(
+      trip_{index}: avg(
         clip($c,
           {trajectory},
           "http://localhost:8080/def/crs/EPSG/0/4326"

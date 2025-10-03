@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import pandas as pd
+from pandas import Timedelta
 import numpy as np
 from datacube import Datacube
 import asyncio
@@ -16,9 +17,11 @@ class TrajectoryRequest(BaseModel):
     threshold: float = 1.0
 
 def execute_query(traj_df: pd.DataFrame, query_type: str, threshold: float = 1.0):
+    start = traj_df["time"].min() - Timedelta(minutes=5)
+    end = traj_df["time"].max() + Timedelta(minutes=5)
     ds = dc.load(
         product="dwd_weather",
-        time=(traj_df["time"].min(), traj_df["time"].max()),
+        time=(start, end),
         output_crs="EPSG:4326",
         resolution=(-0.01, 0.01)
     )
@@ -26,11 +29,11 @@ def execute_query(traj_df: pd.DataFrame, query_type: str, threshold: float = 1.0
     for _, row in traj_df.iterrows():
         sel = ds.sel(
             time=row["time"],
-            lat=row["lat"],
-            lon=row["lon"],
+            latitude=row["lat"],
+            longitude=row["lon"],
             method="nearest"
         )
-        values.append(sel["precipitation"].item())
+        values.append(sel["rainfall_amount"].item())
 
     if query_type == "point":
         return values

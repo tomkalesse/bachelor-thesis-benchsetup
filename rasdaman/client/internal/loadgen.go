@@ -14,10 +14,12 @@ import (
 )
 
 type Result struct {
-	WorkerID   int
-	StatusCode int
-	Latency    time.Duration
-	Error      string
+	WorkerID     int
+	JobID        int
+	StatusCode   int
+	Latency      time.Duration
+	Error        string
+	ResponseBody string
 }
 
 type Payload struct {
@@ -40,7 +42,6 @@ func worker(id int, jobs <-chan int, results chan<- Result, wg *sync.WaitGroup, 
 	}
 
 	for jobID := range jobs {
-		// Pick a payload (rotate over slice)
 		payload := payloads[jobID]
 
 		form := url.Values{}
@@ -56,14 +57,20 @@ func worker(id int, jobs <-chan int, results chan<- Result, wg *sync.WaitGroup, 
 		resp, err := client.Do(req)
 		latency := time.Since(start)
 
-		res := Result{WorkerID: id, Latency: latency}
+		res := Result{WorkerID: id, JobID: jobID, Latency: latency}
 
 		if err != nil {
 			res.Error = err.Error()
 		} else {
 			res.StatusCode = resp.StatusCode
-			io.Copy(io.Discard, resp.Body)
+			bodyBytes, readErr := io.ReadAll(resp.Body)
 			resp.Body.Close()
+
+			if readErr != nil {
+				res.Error = readErr.Error()
+			} else {
+				res.ResponseBody = string(bodyBytes)
+			}
 		}
 
 		// Send result to collector
@@ -114,14 +121,16 @@ func Loadgen(runId string, url string, concurrency int, requests int, payloads [
 	defer writer.Flush()
 
 	// CSV header
-	writer.Write([]string{"worker_id", "status_code", "latency_ms", "error"})
+	writer.Write([]string{"worker_id", "job_id", "status_code", "latency_ms", "error", "response_body"})
 
 	for r := range results {
 		writer.Write([]string{
 			strconv.Itoa(r.WorkerID),
+			strconv.Itoa(r.JobID),
 			strconv.Itoa(r.StatusCode),
 			strconv.FormatFloat(float64(r.Latency.Milliseconds()), 'f', -1, 64),
 			r.Error,
+			r.ResponseBody,
 		})
 	}
 }

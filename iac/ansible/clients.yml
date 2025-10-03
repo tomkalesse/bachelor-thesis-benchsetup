@@ -1,0 +1,119 @@
+- name: Initialize RasDaMan Client
+  hosts: rasdaman_client
+  become: true
+  tasks:
+    - name: Install Go
+      apt:
+        name: golang-go
+        state: present
+        update_cache: yes
+
+    - name: Copy RasDaMan client code
+      copy:
+        src: ../../rasdaman/client/
+        dest: /home/ubuntu/
+        owner: ubuntu
+        group: ubuntu
+        mode: '0755'
+
+    - name: Create results directory
+      file:
+        path: /home/ubuntu/results
+        state: directory
+        owner: ubuntu
+        group: ubuntu
+        mode: '0755'
+
+    - name: Initialize Go module and download dependencies and build application
+      shell: |
+        go mod tidy
+        go mod download
+        go build -o rasdaman-client .
+      become_user: ubuntu
+
+    - name: Create systemd service for RasDaMan client
+      copy:
+        dest: /etc/systemd/system/rasdaman-client.service
+        content: |
+          [Unit]
+          Description=RasDaMan Benchmark Client
+          After=network.target
+
+          [Service]
+          Type=simple
+          User=ubuntu
+          WorkingDirectory=/home/ubuntu/
+          ExecStart=/home/ubuntu/rasdaman-client
+          Restart=on-failure
+          RestartSec=5
+
+          [Install]
+          WantedBy=multi-user.target
+        mode: '0644'
+
+    - name: Reload systemd and start RasDaMan client
+      systemd:
+        name: rasdaman-client
+        daemon_reload: yes
+        enabled: yes
+        state: started
+
+- name: Initialize ODC Client
+  hosts: odc_client
+  become: true
+  tasks:
+    - name: Install Go
+      apt:
+        name: golang-go
+        state: present
+        update_cache: yes
+        
+    - name: Copy ODC client code
+      copy:
+        src: ../../opendatacube/client/
+        dest: /home/ubuntu/
+        owner: ubuntu
+        group: ubuntu
+        mode: '0755'
+
+    - name: Create results directory
+      file:
+        path: /home/ubuntu/results
+        state: directory
+        owner: ubuntu
+        group: ubuntu
+        mode: '0755'
+
+    - name: Initialize Go module and download dependencies and build application
+      shell: |
+        go mod tidy
+        go mod download
+        go build -o opendatacube-client .
+      become_user: ubuntu
+
+    - name: Create systemd service for ODC client
+      copy:
+        dest: /etc/systemd/system/opendatacube-client.service
+        content: |
+          [Unit]
+          Description=OpenDataCube Benchmark Client
+          After=network.target
+
+          [Service]
+          Type=simple
+          User=ubuntu
+          WorkingDirectory=/home/ubuntu/
+          ExecStart=/home/ubuntu/opendatacube-client
+          Restart=on-failure
+          RestartSec=5
+
+          [Install]
+          WantedBy=multi-user.target
+        mode: '0644'
+
+    - name: Reload systemd and start ODC client
+      systemd:
+        name: opendatacube-client
+        daemon_reload: yes
+        enabled: yes
+        state: started

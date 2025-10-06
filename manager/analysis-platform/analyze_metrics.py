@@ -92,5 +92,5 @@ fig.text(
     ha="center", fontsize=9
 )
 
-plt.savefig(f"metrics_result_{argument}.png", dpi=300)
-print(f"✅ Plot saved as metrics_result_{argument}.png")
+plt.savefig(f"./results/metrics_{argument}.png", dpi=300)
+print(f"✅ Plot saved as metrics_{argument}.png")

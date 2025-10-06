@@ -96,3 +96,13 @@
     - name: "Analyze Metrics [Manager]"
       shell:
         python3 /home/ubuntu/analysis-platform/analyze_metrics.py manager
+
+- name: "Download Analysis Results"
+  hosts: manager
+  become: true
+  tasks:
+    - name: Download Analysis Results
+      synchronize:
+        src: /home/ubuntu/results/
+        dest: ../../results/
+        mode: pull

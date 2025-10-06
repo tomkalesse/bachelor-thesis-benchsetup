@@ -1,0 +1,15 @@
+warmup:
+  repetitions: 5
+  concurrency: 2
+  queries:
+    - query_id: 2
+      trajectories: 1
+    - query_id: 4
+      trajectories: 4
+
+execution1:
+  repetitions: 1
+  concurrency: 1
+  queries:
+    - query_id: 6
+      trajectories: 1

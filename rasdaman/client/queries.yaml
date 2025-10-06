@@ -1,18 +1,17 @@
 id: 1
-title: Point-in-raster lookup
-description: Get rainfall at specific trajectory points.
+title: Cumulative rainfall along a trip
+description: Total rainfall amount experienced along a trajectory line.
 placeholders:
-  - type: "POINT"
-    keyword: "{{POINT_PLACEHOLDER}}"
+  - type: "TRAJECTORY"
+    keyword: "{{TRAJECTORY_PLACEHOLDER}}"
 query: |
   for $c in (DWD_5min_4326)
-  return encode(
+  return sum(
     clip(
       $c,
-      {{POINT_PLACEHOLDER}},
+      {{TRAJECTORY_PLACEHOLDER}},
       "http://localhost:8080/def/crs/EPSG/0/4326"
-    ),
-    "json"
+    )
   )
 
 ---
@@ -36,19 +35,19 @@ query: |
 ---
 
 id: 3
-title: Duration above threshold
-description: How long did the trajectory experience > 1 mm/h rainfall?
+title: Peak intensity along the trip
+description: Maximum rainfall value experienced along a trajectory line.
 placeholders:
   - type: "TRAJECTORY"
     keyword: "{{TRAJECTORY_PLACEHOLDER}}"
 query: |
   for $c in (DWD_5min_4326)
-  return count(
+  return max(
     clip(
       $c,
       {{TRAJECTORY_PLACEHOLDER}},
       "http://localhost:8080/def/crs/EPSG/0/4326"
-    )[ $c > 1 ]
+    )
   )
 
 ---
@@ -86,10 +85,28 @@ placeholders:
 query: |
   for $c in (DWD_5min_4326)
   return encode(
-    clip(
-      ($c > 0.5),
+    (clip(
+      $c,
       {{TRAJECTORY_PLACEHOLDER}},
       "http://localhost:8080/def/crs/EPSG/0/4326"
-    ),
+    )) > 0.5,
     "json"
   )
+
+---
+
+id: 6
+title: Fraction of trip above threshold
+description: Fraction (ratio) of trajectory samples with rainfall > 0.5 mm/h.
+placeholders:
+  - type: "TRAJECTORY"
+    keyword: "{{TRAJECTORY_PLACEHOLDER}}"
+query: |
+  for $c in (DWD_5min_4326)
+  return
+    count( (clip($c, {{TRAJECTORY_PLACEHOLDER}}, "http://localhost:8080/def/crs/EPSG/0/4326")) > 0.5 )
+    /
+    count( (clip($c, {{TRAJECTORY_PLACEHOLDER}}, "http://localhost:8080/def/crs/EPSG/0/4326") >= 0)
+          OR
+          (clip($c, {{TRAJECTORY_PLACEHOLDER}}, "http://localhost:8080/def/crs/EPSG/0/4326") < 0)
+        )

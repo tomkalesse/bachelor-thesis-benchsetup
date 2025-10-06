@@ -61,7 +61,7 @@ resource "stackit_server" "rasdaman-sut" {
   project_id        = var.project_id
   name              = "rasdaman-sut"
   availability_zone = "eu01-2"
-  machine_type      = "g1.3"
+  machine_type      = "g2i.4"
   boot_volume = {
     source_type = "volume"
     source_id   = stackit_volume.rasdaman-sut.volume_id
@@ -102,7 +102,7 @@ resource "stackit_server" "rasdaman-client" {
   project_id        = var.project_id
   name              = "rasdaman-client"
   availability_zone = "eu01-2"
-  machine_type      = "g1.3"
+  machine_type      = "g2i.4"
   boot_volume = {
     source_type = "volume"
     source_id   = stackit_volume.rasdaman-client.volume_id

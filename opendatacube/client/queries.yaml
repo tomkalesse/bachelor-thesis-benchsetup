@@ -1,15 +1,15 @@
 id: 1
-title: Point-in-raster lookup
-description: Get rainfall at specific trajectory points.
+title: Cumulative rainfall along a trip
+description: Total rainfall amount experienced along a trajectory line.
 placeholders:
-  - type: "POINT"
-    keyword: "{{POINT_PLACEHOLDER}}"
+  - type: "TRAJECTORY"
+    keyword: "{{TRAJECTORY_PLACEHOLDER}}"
 query: |
   {
     "trajectories": [
-      {{POINT_PLACEHOLDER}}
+      {{TRAJECTORY_PLACEHOLDER}}
     ],
-    "query_type": "point"
+    "query_type": "sum"
   }
 
 ---

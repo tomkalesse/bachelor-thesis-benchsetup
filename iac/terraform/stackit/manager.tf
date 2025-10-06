@@ -47,7 +47,7 @@ resource "stackit_server" "manager" {
   project_id        = var.project_id
   name              = "manager"
   availability_zone = "eu01-2"
-  machine_type      = "g1.1"
+  machine_type      = "g2i.2"
   boot_volume = {
     source_type = "volume"
     source_id   = stackit_volume.manager.volume_id

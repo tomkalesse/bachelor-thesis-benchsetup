@@ -21,3 +21,14 @@ resource "local_file" "ansible_inventory" {
   })
   filename = "../../ansible/inventory.ini"
 }
+
+resource "local_file" "hosts_yaml" {
+  content  = templatefile("../../../manager/hosts.tpl", {
+    odc_sut_ip = stackit_public_ip.odc-sut.ip
+    odc_client_ip = stackit_public_ip.odc-client.ip
+    rasdaman_sut_ip = stackit_public_ip.rasdaman-sut.ip
+    rasdaman_client_ip = stackit_public_ip.rasdaman-client.ip
+  })
+  filename = "../../../manager/hosts.yml"
+}
+

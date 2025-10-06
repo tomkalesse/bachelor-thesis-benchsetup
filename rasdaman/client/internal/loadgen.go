@@ -5,6 +5,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -49,6 +50,7 @@ func worker(id int, jobs <-chan int, results chan<- Result, wg *sync.WaitGroup, 
 		form.Set("version", "2.0.1")
 		form.Set("request", "ProcessCoverages")
 		form.Set("query", payload.Query)
+		log.Println("Submitting query:\n", payload.Query)
 
 		req, _ := http.NewRequest("POST", baseURL, bytes.NewBufferString(form.Encode()))
 		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")

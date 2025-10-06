@@ -1,0 +1,29 @@
+id: 1
+title: Cumulative rainfall along a trip
+description: Total rainfall amount experienced along a trajectory line.
+input: Trajectory
+
+id: 2
+title: Trajectory Exposure (Average Rainfall Along A Trip)
+description: Average rainfall along a trajectory line.
+input: Trajectory
+
+id: 3
+title: Peak intensity along the trip
+description: Maximum rainfall value experienced along a trajectory line.
+input: Trajectory
+
+id: 4
+title: Trip-level join (many trajectories)
+description: Rainfall per trip (multiple trips at once).
+input: Trajectory[]
+
+id: 5
+title: Raster-mask intersection
+description: Which parts of the trip are inside rain > 0.5 mm/h?
+input: Trajectory
+
+id: 6
+title: Fraction of trip above threshold
+description: Fraction (ratio) of trajectory samples with rainfall > 0.5 mm/h.
+input: Trajectory

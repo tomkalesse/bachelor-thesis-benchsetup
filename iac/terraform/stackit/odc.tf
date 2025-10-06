@@ -61,7 +61,7 @@ resource "stackit_server" "odc-sut" {
   project_id        = var.project_id
   name              = "odc-sut"
   availability_zone = "eu01-2"
-  machine_type      = "g1.3"
+  machine_type      = "g2i.4"
   boot_volume = {
     source_type = "volume"
     source_id   = stackit_volume.odc-sut.volume_id
@@ -102,7 +102,7 @@ resource "stackit_server" "odc-client" {
   project_id        = var.project_id
   name              = "odc-client"
   availability_zone = "eu01-2"
-  machine_type      = "g1.1"
+  machine_type      = "g2i.4"
   boot_volume = {
     source_type = "volume"
     source_id   = stackit_volume.odc-client.volume_id

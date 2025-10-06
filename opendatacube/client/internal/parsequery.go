@@ -156,12 +156,6 @@ func (qm *QueryManager) ConstructQuery(queryID int, trajectoryIDs []string) (str
 	// Process each placeholder defined in the template
 	for _, placeholder := range template.Placeholders {
 		switch placeholder.Type {
-		case "POINT":
-			if len(trajectoryIDs) > 0 || trajectoryIDs[0] != "" {
-				constructedQuery = strings.ReplaceAll(constructedQuery, placeholder.Keyword, trajectoryIDs[0])
-			} else {
-				return "", fmt.Errorf("'point' for 'POINT' query missing")
-			}
 		case "TRAJECTORY":
 			if len(trajectoryIDs) > 0 || trajectoryIDs[0] != "" {
 				trajectory, err := qm.LoadTrajectoryFromCSV(trajectoryIDs[0])

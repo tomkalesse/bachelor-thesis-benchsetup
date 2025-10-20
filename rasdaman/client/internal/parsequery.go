@@ -12,14 +12,12 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// Placeholder represents a placeholder definition in the YAML
 type Placeholder struct {
 	Type     string `yaml:"type"`
 	Keyword  string `yaml:"keyword"`
 	Template string `yaml:"template,omitempty"`
 }
 
-// QueryItem represents a single query template in the YAML file
 type QueryItem struct {
 	ID           int           `yaml:"id"`
 	Title        string        `yaml:"title"`
@@ -28,23 +26,19 @@ type QueryItem struct {
 	Query        string        `yaml:"query"`
 }
 
-// TrajectoryPoint represents a single point in a trajectory
 type TrajectoryPoint struct {
 	Timestamp string
 	Latitude  float64
 	Longitude float64
 }
 
-// Trajectory represents a collection of trajectory points
 type Trajectory []TrajectoryPoint
 
-// QueryManager manages query templates and constructs actual queries
 type QueryManager struct {
 	queries     map[int]QueryItem // queries indexed by ID
 	simraFolder string
 }
 
-// NewQueryManager creates a new query manager
 func NewQueryManager(simraFolder string) *QueryManager {
 	return &QueryManager{
 		queries:     make(map[int]QueryItem),
@@ -52,14 +46,12 @@ func NewQueryManager(simraFolder string) *QueryManager {
 	}
 }
 
-// LoadQueries loads all query templates from YAML file into memory
 func (qm *QueryManager) LoadQueries(yamlFile string) error {
 	data, err := os.ReadFile(yamlFile)
 	if err != nil {
 		return fmt.Errorf("failed to read YAML file: %v", err)
 	}
 
-	// Split the YAML content into separate documents
 	yamlDocs := strings.Split(string(data), "\n\n")
 
 	for _, doc := range yamlDocs {
@@ -81,7 +73,6 @@ func (qm *QueryManager) LoadQueries(yamlFile string) error {
 	return nil
 }
 
-// GetQueryTemplate returns a query template by ID
 func (qm *QueryManager) GetQueryTemplate(queryID int) (QueryItem, error) {
 	query, exists := qm.queries[queryID]
 	if !exists {
@@ -90,7 +81,6 @@ func (qm *QueryManager) GetQueryTemplate(queryID int) (QueryItem, error) {
 	return query, nil
 }
 
-// ListQueries returns all available query IDs and titles
 func (qm *QueryManager) ListQueries() map[int]string {
 	result := make(map[int]string)
 	for id, query := range qm.queries {
@@ -99,7 +89,6 @@ func (qm *QueryManager) ListQueries() map[int]string {
 	return result
 }
 
-// LoadTrajectoryFromCSV loads trajectory data from a CSV file
 func (qm *QueryManager) LoadTrajectoryFromCSV(trajectoryID string) (Trajectory, error) {
 	csvPath := filepath.Join(qm.simraFolder, trajectoryID+".csv")
 
@@ -111,15 +100,12 @@ func (qm *QueryManager) LoadTrajectoryFromCSV(trajectoryID string) (Trajectory, 
 
 	reader := csv.NewReader(file)
 
-	// Skip header row
 	_, err = reader.Read()
 	if err != nil {
 		return nil, fmt.Errorf("failed to read CSV headers: %v", err)
 	}
 
 	var trajectory Trajectory
-
-	// Assume CSV format: timestamp, latitude, longitude (columns 0, 1, 2)
 	for {
 		record, err := reader.Read()
 		if err == io.EOF {
@@ -144,7 +130,6 @@ func (qm *QueryManager) LoadTrajectoryFromCSV(trajectoryID string) (Trajectory, 
 	return trajectory, nil
 }
 
-// ConstructQuery constructs a query by replacing placeholders with actual data
 func (qm *QueryManager) ConstructQuery(queryID int, trajectoryIDs []string) (string, error) {
 	template, err := qm.GetQueryTemplate(queryID)
 	if err != nil {
@@ -152,8 +137,6 @@ func (qm *QueryManager) ConstructQuery(queryID int, trajectoryIDs []string) (str
 	}
 
 	constructedQuery := template.Query
-
-	// Process each placeholder defined in the template
 	for _, placeholder := range template.Placeholders {
 		switch placeholder.Type {
 		case "TRAJECTORY":
@@ -171,7 +154,6 @@ func (qm *QueryManager) ConstructQuery(queryID int, trajectoryIDs []string) (str
 			if len(trajectoryIDs) >= 1 {
 				var tripItems []string
 
-				// Use default template if none provided
 				itemTemplate := placeholder.Template
 				if itemTemplate == "" {
 					return "", fmt.Errorf("'itemTemplate' for 'TRAJECTORY_LIST' query missing")
@@ -184,8 +166,6 @@ func (qm *QueryManager) ConstructQuery(queryID int, trajectoryIDs []string) (str
 					}
 
 					trajectoryStr := qm.formatTrajectoryAsLinestring(trajectory)
-
-					// Replace template placeholders
 					tripItem := strings.ReplaceAll(itemTemplate, "{index}", fmt.Sprintf("%d", i+1))
 					tripItem = strings.ReplaceAll(tripItem, "{trajectory}", trajectoryStr)
 
@@ -203,7 +183,6 @@ func (qm *QueryManager) ConstructQuery(queryID int, trajectoryIDs []string) (str
 	return constructedQuery, nil
 }
 
-// formatTrajectoryAsLinestring converts a trajectory to LINESTRING format
 func (qm *QueryManager) formatTrajectoryAsLinestring(trajectory Trajectory) string {
 	if len(trajectory) == 0 {
 		return "LINESTRING()"

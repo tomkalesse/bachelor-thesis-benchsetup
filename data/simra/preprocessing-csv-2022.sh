@@ -1,11 +1,9 @@
 #!/bin/bash
-
 set -euo pipefail
 
 DOWNLOAD_DIR="./simra"
 OUTPUT_DIR="./processed"
 
-# Dependencies
 sudo apt-get update
 sudo apt-get install -y unzip curl parallel gawk
 
@@ -52,8 +50,9 @@ export -f process_csv
 export OUTPUT_DIR
 
 echo "Processing SimRa ride files..."
-# match files like VM2_* (with or without .csv)
 find "$DOWNLOAD_DIR/Berlin/Rides/2022" -type f -name "VM2_*" | parallel process_csv {}
+
+find processed -type f -name "*.csv" -exec awk 'NR>1{exit 1}' {} \; -delete
 
 echo "Creating tar.gz archive..."
 tar -czf simra_processed.tar.gz -C "$OUTPUT_DIR" .

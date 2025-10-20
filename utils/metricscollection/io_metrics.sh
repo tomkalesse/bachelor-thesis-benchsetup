@@ -1,5 +1,4 @@
 #!/bin/bash
-# io_metrics.sh
 OUTFILE="/home/ubuntu/metrics/io_metrics.csv"
 echo "timestamp,r_iops,w_iops,r_kB_s,w_kB_s,r_await_ms,w_await_ms,util_percent" > $OUTFILE
 

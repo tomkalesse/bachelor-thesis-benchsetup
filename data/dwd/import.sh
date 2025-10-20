@@ -16,5 +16,3 @@ tar -I pigz -xf "$ARCHIVE_NAME" -C "$OUTPUT_DIR"
 
 echo "Finished!"
 du -sh "$OUTPUT_DIR"
-
-# real	0m4.259s

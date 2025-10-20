@@ -4,4 +4,4 @@ sudo chown -R rasdaman:rasdaman /home/ubuntu/dwd-geotiff
 sudo chmod o+x /home/ubuntu
 sudo /opt/rasdaman/bin/wcst_import.sh dwd-config-epsg.json
 
-echo "✅ All done."
+echo "All done."

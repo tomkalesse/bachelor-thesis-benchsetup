@@ -7,6 +7,8 @@ import (
 	"log"
 	"net/http"
 	"opendatacube/client/internal"
+	"os"
+	"time"
 )
 
 type Config struct {
@@ -61,7 +63,15 @@ func main() {
 			payload = append(payload, internal.Payload{ID: i + 1, Query: query})
 		}
 
+		start := time.Now()
 		internal.Loadgen(config.RunID, config.BaseURL, config.Concurrency, len(config.QueryConfigs), payload)
+		latency := time.Since(start)
+		txtFile, err := os.Create("./results/results_" + config.RunID + ".txt")
+		if err != nil {
+			panic(err)
+		}
+		defer txtFile.Close()
+		txtFile.WriteString(fmt.Sprintf("%v\n", latency))
 
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("Request received"))

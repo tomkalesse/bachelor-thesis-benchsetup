@@ -1,5 +1,4 @@
 #!/bin/bash
-# mem_metrics.sh
 OUTFILE="/home/ubuntu/metrics/mem_metrics.csv"
 echo "timestamp,mem_available" > $OUTFILE
 

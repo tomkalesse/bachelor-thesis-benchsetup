@@ -17,14 +17,11 @@ for fname in os.listdir(input_dir):
         transform = src.transform
         width = src.width
         height = src.height
-        bounds = src.bounds  # left, bottom, right, top
+        bounds = src.bounds
 
-    # Parse datetime from filename
-    # YW_2017.002_20221231_2355.tif -> 2022-12-31T23:55:00Z
     date_str = fname.split("_")[2] + fname.split("_")[3].split(".")[0]
     dt = datetime.strptime(date_str, "%Y%m%d%H%M").isoformat() + "Z"
 
-    # Geometry polygon from bounds
     geometry = {
         "type": "Polygon",
         "coordinates": [[

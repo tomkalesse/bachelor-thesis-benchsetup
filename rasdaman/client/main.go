@@ -6,7 +6,9 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"rasdaman/client/internal"
+	"time"
 )
 
 type Config struct {
@@ -36,7 +38,6 @@ func main() {
 			http.Error(w, "Only POST method is allowed", http.StatusMethodNotAllowed)
 			return
 		}
-		// retrieve body
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
 			http.Error(w, "Failed to read request body", http.StatusBadRequest)
@@ -44,7 +45,6 @@ func main() {
 		}
 		defer r.Body.Close()
 
-		// unmarshal body to config struct
 		var config Config
 		var payload []internal.Payload
 		if err := json.Unmarshal(body, &config); err != nil {
@@ -60,8 +60,15 @@ func main() {
 			}
 			payload = append(payload, internal.Payload{ID: i + 1, Query: query})
 		}
-
+		start := time.Now()
 		internal.Loadgen(config.RunID, config.BaseURL, config.Concurrency, len(config.QueryConfigs), payload)
+		latency := time.Since(start)
+		txtFile, err := os.Create("./results/results_" + config.RunID + ".txt")
+		if err != nil {
+			panic(err)
+		}
+		defer txtFile.Close()
+		txtFile.WriteString(fmt.Sprintf("%v\n", latency))
 
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("Request received"))

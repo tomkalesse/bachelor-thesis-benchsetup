@@ -1,5 +1,4 @@
 #!/bin/bash
-# cpu_metrics.sh
 OUTFILE="/home/ubuntu/metrics/cpu_metrics.csv"
 echo "timestamp,cpu_user,cpu_system,cpu_iowait,cpu_idle" > $OUTFILE
 

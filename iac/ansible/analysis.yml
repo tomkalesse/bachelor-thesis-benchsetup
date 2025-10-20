@@ -21,7 +21,7 @@
     - name: Fetch Results
       synchronize:
         src: /home/ubuntu/results/
-        dest: ./tmp/results/rasdaman_client/
+        dest: ./tmp/results/rasdaman/
         mode: pull
 
 - name: "Fetch Data [ODC SUT]"
@@ -47,7 +47,7 @@
     - name: Fetch Results
       synchronize:
         src: /home/ubuntu/results/
-        dest: ./tmp/results/odc_client/
+        dest: ./tmp/results/odc/
         mode: pull
 
 - name: "Upload Data [Manager]"
@@ -96,13 +96,19 @@
     - name: "Analyze Metrics [Manager]"
       shell:
         python3 /home/ubuntu/analysis-platform/analyze_metrics.py manager
+    
+    - name: "Analyze Results"
+      shell:
+        python3 /home/ubuntu/analysis-platform/analyze_results.py
 
 - name: "Download Analysis Results"
   hosts: manager
   become: true
+  vars:
+    results_date: "{{ lookup('pipe', 'date +%Y-%m-%d') }}"
   tasks:
     - name: Download Analysis Results
       synchronize:
-        src: /home/ubuntu/results/
-        dest: ../../results/
+        src: /home/ubuntu/analysis-platform/results/
+        dest: "../../results/{{ results_date }}/"
         mode: pull

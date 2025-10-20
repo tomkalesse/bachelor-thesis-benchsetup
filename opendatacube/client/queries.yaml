@@ -80,3 +80,18 @@ query: |
     "query_type": "mask",
     "threshold": 0.5
   }
+
+id: 6
+title: Fraction of trip above threshold
+description: Fraction (ratio) of trajectory samples with rainfall > 0.5 mm/h.
+placeholders:
+  - type: "TRAJECTORY"
+    keyword: "{{TRAJECTORY_PLACEHOLDER}}"
+query: |
+  {
+    "trajectories": [
+      {{TRAJECTORY_PLACEHOLDER}}
+    ],
+    "query_type": "fraction",
+    "threshold": 0.5
+  }

@@ -33,7 +33,7 @@ func worker(id int, jobs <-chan int, results chan<- Result, wg *sync.WaitGroup, 
 	transport := &http.Transport{
 		MaxIdleConns:        1000,
 		MaxIdleConnsPerHost: 1000,
-		MaxConnsPerHost:     0, // 0 = unlimited
+		MaxConnsPerHost:     0,
 		IdleConnTimeout:     90 * time.Second,
 	}
 
@@ -74,11 +74,8 @@ func worker(id int, jobs <-chan int, results chan<- Result, wg *sync.WaitGroup, 
 				res.ResponseBody = string(bodyBytes)
 			}
 		}
-
-		// Send result to collector
 		results <- res
 
-		// Console logging
 		if res.Error != "" {
 			fmt.Printf("Worker %d: error: %v\n", id, res.Error)
 		} else {
@@ -106,7 +103,6 @@ func Loadgen(runId string, url string, concurrency int, requests int, payloads [
 	}
 	close(jobs)
 
-	// Close results after workers finish
 	go func() {
 		wg.Wait()
 		close(results)
@@ -122,7 +118,6 @@ func Loadgen(runId string, url string, concurrency int, requests int, payloads [
 	writer := csv.NewWriter(file)
 	defer writer.Flush()
 
-	// CSV header
 	writer.Write([]string{"worker_id", "job_id", "status_code", "latency_ms", "error", "response_body"})
 
 	for r := range results {

@@ -56,6 +56,12 @@
   hosts: manager
   become: true
   tasks:
+    - name: Install Go
+      apt:
+        name: golang-go
+        state: present
+        update_cache: yes
+        
     - name: Copy RasDaMan setup scripts
       copy:
         src: ../../manager/

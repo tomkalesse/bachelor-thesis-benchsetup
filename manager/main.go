@@ -98,17 +98,23 @@ func listTrajectories(folder string) ([]string, error) {
 	return ids, err
 }
 
-func pickRandom(ids []string, n int) []string {
+func pickRandomWithSeed(ids []string, n int, seed int64) []string {
 	if n > len(ids) {
 		n = len(ids)
 	}
-	rand.Shuffle(len(ids), func(i, j int) { ids[i], ids[j] = ids[j], ids[i] })
-	return ids[:n]
-}
 
-// ---------------------
-// Main
-// ---------------------
+	// Create a new random generator with unique seed
+	rng := rand.New(rand.NewSource(seed))
+
+	idsCopy := make([]string, len(ids))
+	copy(idsCopy, ids)
+
+	rng.Shuffle(len(idsCopy), func(i, j int) {
+		idsCopy[i], idsCopy[j] = idsCopy[j], idsCopy[i]
+	})
+
+	return idsCopy[:n]
+}
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
@@ -140,8 +146,9 @@ func main() {
 				rand.Shuffle(len(shuffled), func(i, j int) { shuffled[i], shuffled[j] = shuffled[j], shuffled[i] })
 
 				var queryEntries []QueryEntry
-				for _, q := range shuffled {
-					trajIDs := pickRandom(trajectories, q.Trajectories)
+				for queryIndex, q := range shuffled {
+					uniqueSeed := time.Now().UnixNano() + int64(queryIndex*1000) + int64(rep*10000)
+					trajIDs := pickRandomWithSeed(trajectories, q.Trajectories, uniqueSeed)
 					queryEntries = append(queryEntries, QueryEntry{
 						QueryID:       q.QueryID,
 						TrajectoryIDs: trajIDs,

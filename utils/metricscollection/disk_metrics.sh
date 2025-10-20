@@ -1,5 +1,4 @@
 #!/bin/bash
-# disk_metrics.sh
 OUTFILE="/home/ubuntu/metrics/disk_metrics.csv"
 echo "timestamp,disk_used_percent,disk_available_gb,disk_total_gb" > $OUTFILE
 

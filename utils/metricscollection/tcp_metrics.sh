@@ -1,5 +1,4 @@
 #!/bin/bash
-# tcp_metrics.sh
 OUTFILE="/home/ubuntu/metrics/tcp_metrics.csv"
 echo "timestamp,tcp_established,tcp_syn_recv,tcp_time_wait,tcp_listen" > $OUTFILE
 

@@ -2,14 +2,146 @@ warmup:
   repetitions: 5
   concurrency: 2
   queries:
+    - query_id: 1
+      trajectories: 1
     - query_id: 2
+      trajectories: 1
+    - query_id: 3
       trajectories: 1
     - query_id: 4
       trajectories: 4
+    - query_id: 5
+      trajectories: 1
+    - query_id: 6
+      trajectories: 1
 
 execution1:
-  repetitions: 1
+  repetitions: 20
   concurrency: 1
   queries:
+    - query_id: 1
+      trajectories: 1
+
+execution2:
+  repetitions: 20
+  concurrency: 1
+  queries:
+    - query_id: 2
+      trajectories: 1
+
+execution3:
+  repetitions: 20
+  concurrency: 1
+  queries:
+    - query_id: 3
+      trajectories: 1
+
+execution4:
+  repetitions: 20
+  concurrency: 1
+  queries:
+    - query_id: 4
+      trajectories: 5
+
+execution5:
+  repetitions: 20
+  concurrency: 1
+  queries:
+    - query_id: 5
+      trajectories: 1
+
+execution6:
+  repetitions: 20
+  concurrency: 1
+  queries:
+    - query_id: 6
+      trajectories: 1
+
+execution7:
+  repetitions: 20
+  concurrency: 12
+  queries:
+    - query_id: 1
+      trajectories: 1
+    - query_id: 2
+      trajectories: 1
+    - query_id: 3
+      trajectories: 1
+    - query_id: 4
+      trajectories: 20
+    - query_id: 5
+      trajectories: 1
+    - query_id: 6
+      trajectories: 1
+    - query_id: 1
+      trajectories: 1
+    - query_id: 2
+      trajectories: 1
+    - query_id: 3
+      trajectories: 1
+    - query_id: 4
+      trajectories: 20
+    - query_id: 5
+      trajectories: 1
+    - query_id: 6
+      trajectories: 1
+    - query_id: 1
+      trajectories: 1
+    - query_id: 2
+      trajectories: 1
+    - query_id: 3
+      trajectories: 1
+    - query_id: 4
+      trajectories: 20
+    - query_id: 5
+      trajectories: 1
+    - query_id: 6
+      trajectories: 1
+    - query_id: 1
+      trajectories: 1
+    - query_id: 2
+      trajectories: 1
+    - query_id: 3
+      trajectories: 1
+    - query_id: 4
+      trajectories: 20
+    - query_id: 5
+      trajectories: 1
+    - query_id: 6
+      trajectories: 1
+    - query_id: 1
+      trajectories: 1
+    - query_id: 2
+      trajectories: 1
+    - query_id: 3
+      trajectories: 1
+    - query_id: 4
+      trajectories: 20
+    - query_id: 5
+      trajectories: 1
+    - query_id: 6
+      trajectories: 1
+    - query_id: 1
+      trajectories: 1
+    - query_id: 2
+      trajectories: 1
+    - query_id: 3
+      trajectories: 1
+    - query_id: 4
+      trajectories: 20
+    - query_id: 5
+      trajectories: 1
+    - query_id: 6
+      trajectories: 1
+    - query_id: 1
+      trajectories: 1
+    - query_id: 2
+      trajectories: 1
+    - query_id: 3
+      trajectories: 1
+    - query_id: 4
+      trajectories: 20
+    - query_id: 5
+      trajectories: 1
     - query_id: 6
       trajectories: 1

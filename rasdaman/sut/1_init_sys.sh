@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
 
-# -- Misc Dependencies --
 sudo apt-get update
 sudo apt-get install -y pigz
 
-# -- Rasdaman Setup --
 wget -O - https://download.rasdaman.org/packages/rasdaman.gpg | sudo apt-key add -
 . /etc/os-release
 echo "deb [arch=amd64] https://download.rasdaman.org/packages/deb $VERSION_CODENAME stable" \
@@ -14,7 +12,6 @@ sudo apt-get -o Dpkg::Options::="--force-confdef" install -y rasdaman
 source /etc/profile.d/rasdaman.sh
 rasql -q 'select c from RAS_COLLECTIONNAMES as c' --out string
 
-# change properties in /opt/rasdaman/etc/petascope.properties for authentication  
 FILE="/opt/rasdaman/etc/petascope.properties"
 BACKUP="${FILE}.bak.$(date +%F_%T)"
 cp "$FILE" "$BACKUP"

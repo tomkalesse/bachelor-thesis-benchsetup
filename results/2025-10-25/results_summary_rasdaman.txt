@@ -1,0 +1,9 @@
+execution1: 11.249169s
+execution2: 13.327168s
+execution3: 12.086729s
+execution4: 52.766744s
+execution5: 11.541609s
+execution6: 33.493715s
+execution7: 562.655473s
+execution8: 557.127791s
+execution9: 493.032086s

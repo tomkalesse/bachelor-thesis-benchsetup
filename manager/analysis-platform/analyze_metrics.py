@@ -87,4 +87,4 @@ fig.text(
 )
 
 plt.savefig(f"/home/ubuntu/analysis-platform/results/metrics_{argument}.png", dpi=300)
-print(f"✅ Plot saved as metrics_{argument}.png")
+print(f"Plot saved as metrics_{argument}.png")

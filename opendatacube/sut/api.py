@@ -187,4 +187,4 @@ async def query_odc(req: TrajectoryRequest):
 async def shutdown_event():
     executor.shutdown(wait=True)
 
-# uvicorn api:app --host 0.0.0.0 --port 8080 --workers 4
+# uvicorn api:app --host 0.0.0.0 --port 8080 --workers 8
